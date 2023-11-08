@@ -2,9 +2,11 @@ package hello.jdbc.repository;
 
 import hello.jdbc.domain.Member;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -16,7 +18,7 @@ class MemberRepositoryV0Test {
     @Test
     void crud() throws SQLException {
         // save
-        Member member = new Member("memberV0", 10000);
+        Member member = new Member("memberV100", 10000);
         repository.save(member);
 
         // findById
@@ -29,5 +31,10 @@ class MemberRepositoryV0Test {
         Member updatedMember = repository.findById(member.getMemberId());
         assertThat(updatedMember.getMoney()).isEqualTo(20000);
 
+        // delete
+        repository.delete(member.getMemberId());
+        // 삭제된 멤버를 찾을때 예외발생하면 성공
+        Assertions.assertThatThrownBy(() -> repository.findById(member.getMemberId()))
+                .isInstanceOf(NoSuchElementException.class);
     }
 }
